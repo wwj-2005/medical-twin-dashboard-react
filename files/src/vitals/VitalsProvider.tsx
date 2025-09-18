@@ -27,7 +27,8 @@ export const VitalsProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const abpSeries = useRef<number[]>(new Array(1000).fill(80));
 
   useEffect(() => {
-    const ws = new WebSocket('ws://localhost:8081');
+    const wsUrl = (import.meta as any).env?.VITE_WS_URL || 'ws://localhost:8081';
+    const ws = new WebSocket(wsUrl);
     ws.onmessage = (ev) => {
       try {
         const m = JSON.parse(ev.data);
