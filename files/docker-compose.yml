@@ -1,0 +1,33 @@
+version: '3.9'
+services:
+  orthanc:
+    image: orthancteam/orthanc:latest
+    restart: unless-stopped
+    ports:
+      - "8042:8042"    # HTTP
+      - "4242:4242"    # DICOM C-STORE
+    environment:
+      ORTHANC__AuthenticationEnabled: "false"
+      ORTHANC__DicomWeb__Enable: "true"
+      ORTHANC__Name: "Orthanc (Demo)"
+    volumes:
+      - orthanc-db:/var/lib/orthanc/db
+
+  ohif:
+    image: ohif/viewer:latest
+    restart: unless-stopped
+    ports:
+      - "3002:80"
+    depends_on:
+      - orthanc
+    volumes:
+      - ./ohif/app-config.js:/usr/share/nginx/html/app-config.js:ro
+
+  mock-ws:
+    build: ./mock-ws
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+
+volumes:
+  orthanc-db:
